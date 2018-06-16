@@ -6,253 +6,142 @@
 #include <ncurses.h>
 //For UTF-8
 #include <locale.h>
-//
+//Local Files
 #include "mapa/mapa.h"
 #include "ncurses/ncurses.h"
-#include "tank.h"
-
+#include "tank/tank.h"
 #include "global.h"
-
-#define MAX_BULLETS 100
-
-
-
-
-int checkDirection;
+//DEBUGING
+#ifndef NODEBUG
+#define DEBUG(...) mvprintw(__VA_ARGS__)
+#else
+#define DEBUG(...)
+#endif
 /////////////////
-int arrow;
-int checkRIGHT = 0;
-int checkLEFT = 0;
-int checkUP = 0;
-int checkDOWN = 0;
-int lastKey = 0;
-
-//Bloques
-
-struct BlockUnbreakable {
-    int x;
-    int y;
-};
-
-struct Block {
-    int x;
-    int y;
-};
-
-struct Bullets {
-    double posx;
-    double posy;
-    double dir ;
-    int alive = 0;
-
-};
-
-void printBullet(struct Tanks tbullet);
+int row,col;
+/////////////////
 
 
-
-//int teclas(struct Tanks *move, struct Tanks tbullet);
-
-
-struct Bullets *bullet[MAX_BULLETS] = {NULL};
-
-/////////////////////////////////////////////////////////////////////////// Funciones para la bala
-
-
-int direction(){
-
-
-    if(checkLEFT == 1)
-        return 1;
-
-    if(checkUP == 1)
-        return 2;
-
-    if(checkDOWN == -1)
-        return 3;
-
-    if(checkRIGHT == -1)
-        return 4;
+void tankToBullet(struct Tanks atank, struct Bullets *bullet){
+    bullet->position.x = atank.position.x;
+    bullet->position.y = atank.position.y;
 }
-
-void printBullet(struct Tanks tbullet, struct Bullets *position, struct Bullets position_Bullet){
-
-    //    arrow = getch();
-    /*    if(getch() =='b'){
-          positionInitial = positionTank(tbullet);
-          position.posx = positionInitial.x;
-
-          position.posy = positionInitial.y;
-          checkDirection = direction();
-          }*/
-        mvprintw(position_Bullet.posy,position_Bullet.posx, "*");
-
-    mvprintw(40,70, "La direccion a la que mira es %i",checkDirection);
-    if(position_Bullet.posx<40 && position_Bullet.posx>1 && position_Bullet.posy>1 && position_Bullet.posy<25){
+/*
+void functionBullet(struct Tanks *tank){
+    Bullets *position = NULL;
+    *position = tankToBullet(*tank);
+}*/
+void printBullet(struct Tanks tbullet, struct Bullets *position_Bullet, struct Bullets position, int checkDirection){
 
 
+    mvprintw((int)position.position.y,(int)position.position.x, "*");
+    DEBUG(40,70, "La direccion a la que mira es %i",checkDirection);
 
+    if( position.position.x<40 && position.position.x>1 && position.position.y>1 && position.position.y<25){
         if(checkDirection == 1)
-            position->posx--;
+            position_Bullet->position.x--;
 
         if(checkDirection == 2)
-            position->posy--;
+            position_Bullet->position.y--;
 
         if(checkDirection == 3)
-            position->posy++;
+            position_Bullet->position.y++;
 
         if(checkDirection == 4)
-            position->posx++;
-
-
+            position_Bullet->position.x++;
     }
     else{
-        mvprintw(position_Bullet.posy,position_Bullet.posx, " ");
-        //    bullet[MAX_BULLETS] = bullet[--bullet_count];
+        mvprintw((int)position_Bullet->position.y,(int)position_Bullet->position.x, " ");
     }
-
-    mvprintw(20,60,"La posicion Y = %lf,La posicion X = %lf",position_Bullet.posy,position_Bullet.posx);
-
-//    mvprintw(30,80," spawn Y=%i,  X= %i, e I = %i",spawn[i].posy,spawn[i].posx,i );
-//    mvprintw(21,60,"La posicionInicial Y = %lf,La posicionInicial X = %lf",positionInitial.y,positionInitial.x);
-    //      }
-
-
+    DEBUG(20,60,"La posicion Y = %lf,La posicion X = %lf",position_Bullet->position.y,position_Bullet->position.x);
     refresh();
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+int teclas(struct Tanks *move, Bullets *position_Bullet){
+    int checkDirection;
+    int static checkRIGHT = 0;
+    int static checkLEFT = 0;
+    int static checkUP = 0;
+    int static checkDOWN = 0;
+    int arrow;
+    int static lastKey = 0;
+    arrow = getch();
+    if(arrow != -1)
+        lastKey = arrow;
+    DEBUG(row-5,0,"arrow es %i, y lastkey es %i", arrow, lastKey);
+    DEBUG(row-6,0,"checkRIGHT: %i, checkDOWN: %i, checkLEFT: %i, checkUP: %i",
+          checkRIGHT,     checkDOWN,     checkLEFT,     checkUP);
+    switch(arrow){
+        case KEY_UP:
+            resetCheck(arrow, checkUP, checkLEFT, checkDOWN, checkRIGHT);
+            if(direction(checkUP, checkLEFT, checkDOWN, checkRIGHT) == 1){
+                (*move).position.y -= 1;
+                if((*move).position.y < minf + 1 )//((minf-1) ))//Up limit 9
+                    (*move).position.y += 1;
+            }
+            maxCheck(arrow, checkUP, checkLEFT, checkDOWN, checkRIGHT);
+            break;
+
+        case KEY_LEFT:
+            resetCheck(arrow, checkUP, checkLEFT, checkDOWN, checkRIGHT);
+            if(direction(checkUP, checkLEFT, checkDOWN, checkRIGHT) == 2){
+                (*move).position.x -= 1;
+                if((*move).position.x < minc + 1 )//Left limit 9
+                    (*move).position.x += 1;
+            }
+            maxCheck(arrow, checkUP, checkLEFT, checkDOWN, checkRIGHT);
+            break;
+
+        case KEY_DOWN:
+            resetCheck(arrow, checkUP, checkLEFT, checkDOWN, checkRIGHT);
+            if(direction(checkUP, checkLEFT, checkDOWN, checkRIGHT) == 3){
+                (*move).position.y += 1;
+                if( (*move).position.y > maxf-1 )// Down limit -15
+                    (*move).position.y -= 1;
+            }
+            maxCheck(arrow, checkUP, checkLEFT, checkDOWN, checkRIGHT);
+            break;
+
+        case KEY_RIGHT:
+            resetCheck(arrow, checkUP, checkLEFT, checkDOWN, checkRIGHT);
+            if(direction(checkUP, checkLEFT, checkDOWN, checkRIGHT) == 4){
+                (*move).position.x += 1;
+                if( (*move).position.x > maxc-1 )// Right limit -30
+                    (*move).position.x -= 1;
+            }
+            maxCheck(arrow, checkUP, checkLEFT, checkDOWN, checkRIGHT);
+            break;
+        case 'b':
+            checkDirection = direction(checkUP, checkLEFT, checkDOWN, checkRIGHT);
+            tankToBullet(*move, position_Bullet);
+            return checkDirection;
+            //functionBullet(move);
+            //*positionInitial = positionTank(*move);
+        default:
+            return arrow;
     }
-int bulletAlive(struct Bullets spawn[MAX_BULLETS]){
+    refresh();
+    return arrow;
+}
 
+int main() {
+    int dir = 0;
+    setlocale(LC_ALL,"");
+    struct Tanks tank1 = {7,7};
+    struct Bullets bullet = {0,0};
 
-//    struct Bullets spawn[MAX_BULLETS];
-    int i = 0;
-    // activa una bala cada vez que le das a la flecha abajo
-    //    int i = 0;
-    if(i < MAX_BULLETS){ //&& getch() == KEY_DOWN){ incluir esta condicion en la funcion teclas dentro de case 'b'
-        // // fill in the data
-//        spawn[i].alive += 1;//cambiar la struct position por array y sustituir por spawn
-//        mvprintw(spawn[i].posy,spawn[i].posx, "*");
+    iniciar_Curses();
+    getmaxyx(stdscr,row,col);
 
-        i++;
-        //     mvprintw(30,80," spawn Y=%i,  X= %i",spawn[i].posy,spawn[i].posx);
-
+    while(teclas(&tank1, &bullet) != KEY_BREAK){
+        clear();
+        printMap();
+        printTank(tank1);
+        printBullet(tank1,&bullet, bullet, dir);
+        dir = teclas(&tank1, &bullet);
+        usleep(20000);
     }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////
-int teclas(struct Tanks *move, struct Tanks tbullet, struct Tanks positionInitial, struct Bullets *position){
-
-        arrow = getch();
-        if(arrow != -1)
-            lastKey = arrow;
-
-        //    check_collision();
-        mvprintw(row-5,0,"arrow es %i, y lastkey es %i", arrow, lastKey);
-        mvprintw(row-6,0,"checkRIGHT: %i, checkDOWN: %i, checkLEFT: %i, checkUP: %i", checkRIGHT, checkDOWN, checkLEFT, checkUP);
-
-        switch(arrow){
-
-            case KEY_UP:
-                checkRIGHT = 0;
-                checkDOWN  = 0;
-                checkLEFT  = 0;
-
-                if(direction() == 2){
-                    (*move).y -= 1;
-                    if((*move).y < minf + 1 )//((minf-1) ))//Up limit 9
-                        (*move).y += 1;
-
-                }
-                checkUP += 1;
-                if(checkUP > 1)
-                    checkUP -= 1;
-                break;
-
-            case KEY_LEFT:
-                checkRIGHT = 0;
-                checkDOWN  = 0;
-                checkUP    = 0;
-                if(direction() == 1){
-                    (*move).x -= 1;
-                    if((*move).x < minc + 1 )//Left limit 9
-                        (*move).x += 1;
-
-                }
-
-                checkLEFT += 1;
-                if(checkLEFT > 1)
-                    checkLEFT -= 1;
-                break;
-
-            case KEY_DOWN:
-
-                checkRIGHT = 0;
-                checkLEFT  = 0;
-                checkUP    = 0;
-                if(direction() == 3){
-                    (*move).y += 1;
-                    if( (*move).y > maxf-1 ) // Down limit -15
-                        (*move).y -= 1;
-                }
-
-                checkDOWN -= 1;
-                if(checkDOWN < -1)
-                    checkDOWN += 1;
-                break;
-
-            case KEY_RIGHT:
-
-                checkDOWN  = 0;
-                checkLEFT  = 0;
-                checkUP    = 0;
-
-                if(direction() == 4){
-                    (*move).x += 1;
-                    if( (*move).x > maxc-1 )// Right limit -30
-                        (*move).x -= 1;
-                }
-                checkRIGHT -= 1;
-                if(checkRIGHT < -1)
-                    checkRIGHT += 1;
-                break;
-            case 'b':
-                positionInitial = positionTank(tbullet);
-                position->posx = positionInitial.x;
-                position->posy = positionInitial.y;
-                checkDirection = direction();
-
-//                bulletAlive(bullet[MAX_BULLETS]);
-                break;
-
-        }
-        refresh();
-        return arrow;
-    }
-
-
-
-    int main() {
-        //    struct BlockUnbreakable blockU[N];
-        //    struct Block block[M];
-        struct Tanks tank = {7,7};
-
-        Tanks position_Initial;
-        Bullets positionb = {5,5,0,0};
-
-        setlocale(LC_ALL,"");
-        iniciar_Curses();
-
-        //struct Bullets *bullet[MAX_BULLETS] = {NULL};
-        getmaxyx(stdscr,row,col);
-
-        while(teclas(&tank,tank, position_Initial, &positionb) != KEY_BREAK){
-            clear();
-            printMap();
-            printBullet(tank,&positionb,positionb);
-            tank1( (int) tank.x, (int) tank.y);
-            teclas(&tank,tank, position_Initial, &positionb);
-            usleep(20000);
-        }
-        finalizar_Curses();
-        return 0;
-    }
+    finalizar_Curses();
+    return EXIT_SUCCESS;
+}
 

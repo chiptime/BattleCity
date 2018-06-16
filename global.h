@@ -12,7 +12,24 @@ extern "C" {
 #endif
 
 
-int row,col;
+struct Position{
+    double x;
+    double y;
+};
+struct Block {
+    struct Position position;
+    bool unbreakable;
+};
+struct Tanks {
+    struct Position position;
+    bool ia;
+};
+struct Bullets {
+    struct Position position;
+    double dir ;
+    int alive = 0;
+};
+
 
 #ifdef __cplusplus
 }
