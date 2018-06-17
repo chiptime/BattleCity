@@ -34,26 +34,6 @@ void resetCheck(int key, int &UP, int &LEFT, int &DOWN, int &RIGHT){
         }
     }
 }
-
-/*
-Tanks positionTank(struct Tanks atank){
-    return atank;
-}
-
- void printTank(struct Tanks tank) {
-    int algo;
-    algo = mvprintw((int)tank.position.y,(int)tank.position.x,"H");
-
-    //DEBUG
-    if(ERR == algo){
-        DEBUG( row -2,0,"This screen has %d rows and %d columns\n", row , col );
-        DEBUG( row -1,0,"errah, %i,%i no es una dirección valida\n", tank.position.y, tank.position.x);
-    }
-    DEBUG( row -1,0,"tank 1 está en, %i,%i", tank.position.y, tank.position.x);
-    DEBUG( row -2,0,"tank 1 está en, %i,%i", tank.position.y, tank.position.x);
-    refresh();
-}
-*/
 void printTank(struct Tanks tank) {
     mvprintw((int)tank.position.y,(int)tank.position.x,"H");
     refresh();

@@ -11,54 +11,12 @@
 #include "ncurses/ncurses.h"
 #include "tank/tank.h"
 #include "global.h"
-//DEBUGING
-#ifndef NODEBUG
-#define DEBUG(...) mvprintw(__VA_ARGS__)
-#else
-#define DEBUG(...)
-#endif
-/////////////////
+#include "bullet.h"
+///////////////// DEBUGGING
 int row,col;
-/////////////////
-
-
-void tankToBullet(struct Tanks atank, struct Bullets *bullet){
-    bullet->position.x = atank.position.x;
-    bullet->position.y = atank.position.y;
-}
-/*
-void functionBullet(struct Tanks *tank){
-    Bullets *position = NULL;
-    *position = tankToBullet(*tank);
-}*/
-void printBullet(struct Tanks tbullet, struct Bullets *position_Bullet, struct Bullets position, int checkDirection){
-
-
-    mvprintw((int)position.position.y,(int)position.position.x, "*");
-    DEBUG(40,70, "La direccion a la que mira es %i",checkDirection);
-
-    if( position.position.x<40 && position.position.x>1 && position.position.y>1 && position.position.y<25){
-        if(checkDirection == 1)
-            position_Bullet->position.x--;
-
-        if(checkDirection == 2)
-            position_Bullet->position.y--;
-
-        if(checkDirection == 3)
-            position_Bullet->position.y++;
-
-        if(checkDirection == 4)
-            position_Bullet->position.x++;
-    }
-    else{
-        mvprintw((int)position_Bullet->position.y,(int)position_Bullet->position.x, " ");
-    }
-    DEBUG(20,60,"La posicion Y = %lf,La posicion X = %lf",position_Bullet->position.y,position_Bullet->position.x);
-    refresh();
-}
 ////////////////////////////////////////////////////////////////////////////////////////////
 int teclas(struct Tanks *move, Bullets *position_Bullet){
-    int checkDirection;
+    int static checkDirection = 0;
     int static checkRIGHT = 0;
     int static checkLEFT = 0;
     int static checkUP = 0;
@@ -69,6 +27,7 @@ int teclas(struct Tanks *move, Bullets *position_Bullet){
     if(arrow != -1)
         lastKey = arrow;
     DEBUG(row-5,0,"arrow es %i, y lastkey es %i", arrow, lastKey);
+    DEBUG(row-8,0,"checkDirection is %i ", checkDirection);
     DEBUG(row-6,0,"checkRIGHT: %i, checkDOWN: %i, checkLEFT: %i, checkUP: %i",
           checkRIGHT,     checkDOWN,     checkLEFT,     checkUP);
     switch(arrow){
@@ -115,13 +74,10 @@ int teclas(struct Tanks *move, Bullets *position_Bullet){
             checkDirection = direction(checkUP, checkLEFT, checkDOWN, checkRIGHT);
             tankToBullet(*move, position_Bullet);
             return checkDirection;
-            //functionBullet(move);
-            //*positionInitial = positionTank(*move);
         default:
-            return arrow;
+            return checkDirection;
     }
     refresh();
-    return arrow;
 }
 
 int main() {
@@ -136,9 +92,11 @@ int main() {
     while(teclas(&tank1, &bullet) != KEY_BREAK){
         clear();
         printMap();
-        printTank(tank1);
         printBullet(tank1,&bullet, bullet, dir);
+        printTank(tank1);
         dir = teclas(&tank1, &bullet);
+
+        DEBUG(row-10,0,"dir is %i", dir);
         usleep(20000);
     }
     finalizar_Curses();

@@ -11,6 +11,12 @@
 extern "C" {
 #endif
 
+//DEBUGING
+#ifndef NODEBUG
+#define DEBUG(...) mvprintw(__VA_ARGS__)
+#else
+#define DEBUG(...)
+#endif
 
 struct Position{
     double x;

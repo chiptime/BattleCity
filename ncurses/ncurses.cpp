@@ -9,9 +9,9 @@ void iniciar_Curses(){
     curs_set(0);
     keypad(stdscr, TRUE);
     halfdelay(1);
-    //    cbreak();
+    //cbreak();
     nodelay(stdscr,true);
-    //    noecho();
+    noecho();
 
 }
 
