@@ -5,8 +5,7 @@
 #ifndef BATTLECITY_BULLET_H
 #define BATTLECITY_BULLET_H
 
-#include <ncurses.h>
-#include "global.h"
+#include "../global/global.h"
 
 
 #ifdef __cplusplus

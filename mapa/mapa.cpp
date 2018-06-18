@@ -2,8 +2,7 @@
 // Created by bruno on 14/06/18.
 //
 
-#include <ncurses.h>
-#include "../ncurses/ncurses.h"
+
 #include "mapa.h"
 
 char map[fila][columna]= {

@@ -1,8 +1,8 @@
 //
 // Created by bruno on 14/06/18.
 //
-#include "../global.h"
-#include <ncurses.h>
+#include "../global/global.h"
+
 
 
 #ifndef BATTLECITY_TANK_H

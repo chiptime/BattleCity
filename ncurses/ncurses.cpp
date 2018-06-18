@@ -1,7 +1,7 @@
 //
 // Created by bruno on 14/06/18.
 //
-#include <ncurses.h>
+
 #include "ncurses.h"
 
 void iniciar_Curses(){

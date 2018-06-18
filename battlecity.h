@@ -1,0 +1,8 @@
+//
+// Created by bruno on 17/06/18.
+//
+
+#ifndef BATTLECITY_BATTLECITY_CPP_H
+#define BATTLECITY_BATTLECITY_CPP_H
+
+#endif //BATTLECITY_BATTLECITY_CPP_H

@@ -9,6 +9,8 @@
 //#define N 50
 //#define M 50
 
+#include "../global/global.h"
+
 #define fila  27
 #define columna 42
 

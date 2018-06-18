@@ -5,6 +5,7 @@
 #ifndef BATTLECITY_NCURSES_H
 #define BATTLECITY_NCURSES_H
 
+#include "../global/global.h"
 
 #ifdef __cplusplus
 extern "C" {

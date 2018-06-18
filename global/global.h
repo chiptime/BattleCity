@@ -5,11 +5,14 @@
 #ifndef BATTLECITY_GLOBAL_H
 #define BATTLECITY_GLOBAL_H
 
-
+#include <ncurses.h>
+#include "global.cpp"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
 
 //DEBUGING
 #ifndef NODEBUG
